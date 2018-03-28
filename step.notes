@@ -1,0 +1,20 @@
+Alot of fancy jargon for what?
+
+This is nothing more than a high level, multi-step, 
+  try-catch-finally, transaction
+
+A Divide and Conquer coding style
+A high level Best Practices
+---
+
+Step Transaction
+  I don't know the coding style of your organization
+      ??Exceptions coming from functions called in the dispatcer??
+      ??Return code from functions called by dispatcher triggers exceptions??
+   I coded for both
+
+  Remember there is a debate over using exceptions as Flow Control.
+
+  Is kissing an exception, if (kiss(401, $_)) {}, really bad.
+     Q: Are there different levels of exceptions?
+

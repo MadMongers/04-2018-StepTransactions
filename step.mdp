@@ -1,0 +1,523 @@
+%title: Step Transactions
+%author: James Edwards
+%date: 2018-03-08
+
+-> Ovid/Tau Station <-
+=========
+
+At The Perl Conference 2017 in Washington DC, Curtis Poe gave a talk
+titled [Modeling a Universe in Perl](http://www.perlconference.us/tpc-2017-dc/talks/#modeling_a_universe_in_perl)
+  [Video](https://www.youtube.com/watch?v=UmLwYLSmTSs)
+
+  Declarative Perl
+    Series of Steps in Subject Verb Object Structure
+      Iterates over each of the steps in succession, and if any of them fail,
+      all changes are discarded and the failed transaction is logged. If all
+      of the steps succeed, every object which was updated is then stored in
+      the database and we log a successful transaction.
+
+He / They (Poe, Tau Station) have been super secret about the implementation.
+
+    01        Steps(
+    02                  topic_areaX( recipient => verb   => object ),
+    03                  topic_areaX( recipient => verb   => object ),
+    04         FAILURE( topic_areaX( recipient => verb   => object ) ),
+    05         ALWAYS(  topic_areaX( recipient => verb   => object ) ),
+    06       ),
+
+The 'topic_area' is a class and the SVO arguments help to build the instance.
+
+-------------------------------------------------
+
+-> # Tau Station code tease <-
+
+*code snippet*  Visit a clone vat and gestated a new clone 
+
+    01 sub purchase_clone {
+    02   my ($self) = @_;
+    03
+    04   my $succeeded = $self->new_exchange(
+    05        slug            => 'purchase-clone',
+    06        success_message => 'You have purchased a new clone',
+    07        failure_message => 'You could not purchase a new clone',
+    08        Steps(
+    09                  Location( $self      => is_in_area   => 'clonevat'              ),
+    10                  Wallet(   $self      => pay          => $self->price('cloning') ),
+    11                  Clone(    $self      => gestate      => $self->station_area     ),
+    12         FAILURE( Wallet(   $character => remove       => $bet_amount ) ),
+    13         ALWAYS( Wallet( $character => show_balance ) ),
+    14      ),
+    15   )->attempt;
+    16 }
+
+-------------------------------------------------
+
+-> # Tau Station code tease cont. <-
+
+What are we concerned about
+
+    08        Steps(
+    09                  Location( $self      => is_in_area   => 'clonevat'              ),
+    10                  Wallet(   $self      => pay          => $self->price('cloning') ),
+    11                  Clone(    $self      => gestate      => $self->station_area     ),
+    12         FAILURE( Wallet(   $character => remove       => $bet_amount ) ),
+    13         ALWAYS( Wallet( $character => show_balance ) ),
+    14      ),
+
+Ovid
+     Steps() is actually a constructor which (sort of) takes a list of economic action 
+     objects. Wallet is a constructor for a Veure::Economy::Asset::Wallet instance
+
+JE
+     'Assets' being constructors, I can do. 'Steps' being a constructor, I don't know why?
+     I'll leave that for a purist.
+
+-------------------------------------------------
+
+-> # Tau Station code tease cont. <-
+
+What are we concerned about
+
+    08        Steps(
+    09                  Location( $self      => is_in_area   => 'clonevat'              ),
+    10                  Wallet(   $self      => pay          => $self->price('cloning') ),
+    11                  Clone(    $self      => gestate      => $self->station_area     ),
+    12         FAILURE( Wallet(   $character => remove       => $bet_amount ) ),
+    13         ALWAYS( Wallet( $character => show_balance ) ),
+    14      ),
+
+- I could look at Devel::Declare
+
+-------------------------------------------------
+
+-> # Tau Station code tease cont. <-
+
+What are we concerned about
+
+    08        Steps(
+    09                  Location( $self      => is_in_area   => 'clonevat'              ),
+    10                  Wallet(   $self      => pay          => $self->price('cloning') ),
+    11                  Clone(    $self      => gestate      => $self->station_area     ),
+    12         FAILURE( Wallet(   $character => remove       => $bet_amount ) ),
+    13         ALWAYS( Wallet( $character => show_balance ) ),
+    14      ),
+
+- I could look at Devel::Declare
+    - Kool. Its a Matt Trout module
+
+-------------------------------------------------
+
+-> # Tau Station code tease cont. <-
+
+What are we concerned about
+
+    08        Steps(
+    09                  Location( $self      => is_in_area   => 'clonevat'              ),
+    10                  Wallet(   $self      => pay          => $self->price('cloning') ),
+    11                  Clone(    $self      => gestate      => $self->station_area     ),
+    12         FAILURE( Wallet(   $character => remove       => $bet_amount ) ),
+    13         ALWAYS( Wallet( $character => show_balance ) ),
+    14      ),
+
+- I could look at Devel::Declare
+    - Kool. Its a Matt Trout module
+        - Googling: Not much action out there
+
+-------------------------------------------------
+
+-> # Tau Station code tease cont. <-
+
+What are we concerned about
+
+    08        Steps(
+    09                  Location( $self      => is_in_area   => 'clonevat'              ),
+    10                  Wallet(   $self      => pay          => $self->price('cloning') ),
+    11                  Clone(    $self      => gestate      => $self->station_area     ),
+    12         FAILURE( Wallet(   $character => remove       => $bet_amount ) ),
+    13         ALWAYS( Wallet( $character => show_balance ) ),
+    14      ),
+
+- I could look at Devel::Declare
+    - Kool. Its a Matt Trout module
+        - Googling: Not much action out there
+        -     Its tax season. My dance card is full. Next option
+
+-------------------------------------------------
+
+-> # Tau Station code tease cont. <-
+
+What are we concerned about
+
+    08        Steps(
+    09                  Location( $self      => is_in_area   => 'clonevat'              ),
+    10                  Wallet(   $self      => pay          => $self->price('cloning') ),
+    11                  Clone(    $self      => gestate      => $self->station_area     ),
+    12         FAILURE( Wallet(   $character => remove       => $bet_amount ) ),
+    13         ALWAYS( Wallet( $character => show_balance ) ),
+    14      ),
+
+* I could write a perl source filter
+
+-------------------------------------------------
+
+-> # Tau Station code tease cont. <-
+
+What are we concerned about
+
+    08        Steps(
+    09                  Location( $self      => is_in_area   => 'clonevat'              ),
+    10                  Wallet(   $self      => pay          => $self->price('cloning') ),
+    11                  Clone(    $self      => gestate      => $self->station_area     ),
+    12         FAILURE( Wallet(   $character => remove       => $bet_amount ) ),
+    13         ALWAYS( Wallet( $character => show_balance ) ),
+    14      ),
+
+- I could write a perl source filter
+    - *Filter::Util::Call
+
+-------------------------------------------------
+
+-> # Tau Station code tease cont. <-
+
+What are we concerned about
+
+    08        Steps(
+    09                  Location( $self      => is_in_area   => 'clonevat'              ),
+    10                  Wallet(   $self      => pay          => $self->price('cloning') ),
+    11                  Clone(    $self      => gestate      => $self->station_area     ),
+    12         FAILURE( Wallet(   $character => remove       => $bet_amount ) ),
+    13         ALWAYS( Wallet( $character => show_balance ) ),
+    14      ),
+
+- I could write a perl source filter
+    - Filter::Util::Call
+        - *Disclaimer: Jim had no experience w/ F:U:C before this adventure
+
+-------------------------------------------------
+
+-> # Tau Station code tease cont. <-
+
+What are we concerned about
+
+    08        Steps(
+    09                  Location( $self      => is_in_area   => 'clonevat'              ),
+    10                  Wallet(   $self      => pay          => $self->price('cloning') ),
+    11                  Clone(    $self      => gestate      => $self->station_area     ),
+    12         FAILURE( Wallet(   $character => remove       => $bet_amount ) ),
+    13         ALWAYS( Wallet( $character => show_balance ) ),
+    14      ),
+
+- I could write a perl source filter
+    - Filter::Util::Call
+        - Disclaimer: Jim had no experience w/ F:U:C before this quest
+        - *_Rules of Filter_*
+            -    Keep it Simple 
+                -      This is just a proof of concept
+                -      Put most of code in the project
+                -      Each 'step" on a single line. Sorry PerlyTidy folks
+
+-------------------------------------------------
+
+-> # Filter output <-
+
+    08        Steps(
+    09                  Location( $self      => is_in_area   => 'clonevat'              ),
+    10                  Wallet(   $self      => pay          => $self->price('cloning') ),
+    11                  Clone(    $self      => gestate      => $self->station_area     ),
+    12         FAILURE( Wallet(   $character => remove       => $bet_amount ) ),
+    13         ALWAYS( Wallet( $character => show_balance ) ),
+    14      ),
+
+My target output: Should make NOT you scream when you see it in the perl debugger!
+
+    08      Steps(
+    09        [ undef,    'Location', [ $self, 'is_in_area', 'clonevat',  ],  ],
+    10        [ undef,    'Wallet',   [ $self, 'pay', $self->price('cloning'),  ],  ],
+    11        [ undef,    'Clone',    [ $self, 'gestate', $self->station_area,  ],  ],
+    12        [ 'FAILURE','Wallet',   [ $character, 'remove', $bet_amount, ],  ],
+    13        [ 'ALWAYS', 'Wallet',   [ $character, 'show_balance', ],  ],
+    14      ),
+
+Reminder: Methods inside the anonymous arrays will be executed before calling 'Steps'
+
+-------------------------------------------------
+
+-> # From the man page of Filter::Util::Call <-
+
+
+Example 4: Using filter_del
+
+Another variation on a theme. This time we will modify the Subst filter to 
+allow a starting and stopping pattern to be specified as well as the from 
+and to patterns. If you know the vi editor, it is the equivalent of this command:
+
+    :/start/,/stop/s/from/to/
+
+When used as a filter we want to invoke it like this:
+
+    use NewSubst qw(start stop from to) ;
+
+-------------------------------------------------
+
+-> # More on Filter::Util::Call <-
+
+Cont.  Example 4: Using filter_del
+
+
+
+If you know vi, then you know that
+
+    :/start/,/stop/s/from/to/
+
+is not
+
+    :/start/,/stop/s/from/to/g
+
+What we're looking for is
+
+    :/Steps(/,/;/s/simple-search/new-output/g       # pseudo code
+
+
+-------------------------------------------------
+
+-> # From the man page of Filter::Util::Call cont. <-
+
+    01 package NewSubst ;
+    02 use Filter::Util::Call ;
+    03 sub import {
+    05     my ($self, $start, $stop, $from, $to) = @_ ; 
+    06     my ($found) = 0 ;
+    07     filter_add( sub {
+    08             my ($status) ;
+    09             if (($status = filter_read()) > 0) {
+    10                 $found = 1;
+    11                 if $found == 0 and /$start/ ;
+    12                 if ($found) {
+    13                     s/$from/$to/ ;
+    14                     filter_del() if /$stop/ ;
+    15                 }
+    16             }
+    17             $status ;  # JE comment: slight of hand *return value*
+    18         } )
+    19 }
+
+-------------------------------------------------
+
+-> # my lib/myfilter.pm <-
+
+    01 sub import {
+    02   my ($self,)=@_;
+    03   my ($found)=0;
+    04   filter_add( sub {
+    05       my ($status) ;
+    06       if (($status = filter_read()) > 0) {
+    07         if ($found == 0 and /Steps\(/) { $found = 1; }
+    08         if ($found) {
+    09           if (/;\s*\z/) {
+    10              $found = 0;
+    11           } elsif (/\b(?<post_trans>FAILURE|ALWAYS)\
+    12                     (\s*(?<func>\w.*?)\(\s*(?<args>.*)\)\s*\)\s*\,\s*\z/m) {
+    13            my $argz = _make_args($+{args}); 
+    14            $_ = "[ '$+{post_trans}', '$+{func}', [$argz],  ],\n";
+    15          } else { 
+    16            if (   /\b(?<func>\w.*?)\(\s*(?<args>.*)\)/   ) {
+    17              my $argz = _make_args($+{args});
+    18              $_ = "[ undef, '$+{func}', [ $argz ],  ],\n";
+    19            }
+    20          }
+    21        } }
+    22      return $status;
+    23    } ) }  # far left } matches sub's {
+
+-------------------------------------------------
+
+-> # Step Machine page 1 <-
+
+    01 sub Steps {
+    02    my (@args) = @_;      
+    03    my $rc =0;
+    04    try {
+    05       # BEGIN_TRANSACTION();
+    06       foreach my $i (@args) {
+    07          if (not defined($$i[0])) {
+    08             $rc = dispatch( $$i[1], $$i[2]);
+    09             if ($rc) {    # false:Success true:Failure
+    10                ouch 'Blame it on Cain', "Please don't blame it on me";
+    11  #             last;  # just a reminder
+    12             }
+    13          }
+    14       }
+    15       # END_TRANSACTION();
+    16    } 
+
+-------------------------------------------------
+
+-> # Step Machine page 2 <-
+
+    17    catch {
+    18       # ROLL_BACK();
+    19       dispatch_by_label('FAILURE', @args); 
+    20       if (kiss(600, $_)) {
+    21         say "kissed an exception";
+    22       } else {
+    23         die $_; # rethrow
+    24       }
+    25    }
+    26    finally {
+    27       dispatch_by_label('ALWAYS', @args); 
+    28    };
+    29
+    30    return $rc;
+    31 }
+
+-------------------------------------------------
+
+-> # Dispatcher <-
+
+My dispatcher is a case statement using
+Switch::Plain
+
+    01   sswitch (rtn_a_string($asset)) {
+    02      case 'Clone': {
+    03          $obj = V::Clone->new($args);
+    04      }
+    05      case 'Location': {
+    06          $obj = V::Location->new($args);
+    07      }
+    08      case 'Wallet': {
+    09          $obj = V::Wallet->new($args);
+    10      }
+    11      default: { croak "Bad switching: $asset"; }
+    12   }
+
+You could do
+
+    my $package_base = 'Veure::Economy::Asset::';
+    my $assetpackage = $package_base . $asset;
+    $obj = $assetpackage->new($args);
+
+for less maintenance.? But thats assuming all assets in the same directory structure
+
+-------------------------------------------------
+
+-> # Moo consturctor <-
+
+obj->new() to rephrase the arguments. using BUILDARGS
+
+    10        [ undef,    'Wallet',   [ $self,      'pay',         1_000,     ],  ],
+    12        [ 'FAILURE','Wallet',   [ $character, 'remove',      1_000_006, ],  ],
+    13        [ 'ALWAYS', 'Wallet',   [ $character, 'show_balance',           ],  ],
+
+    01 package V::Wallet;
+    02 use strict; use warnings; use Moo;
+    03 has key => ( is      => 'rw', default => undef, );
+    04 
+    05 around BUILDARGS => sub {
+    06    my ( $orig, $class, @args ) = @_;
+    07 
+    08    return { key => 'Wallet' }           # Handle @args
+    09
+    10 #   if @args == 1 && !ref $args[0] { return { attr1 => $args[0] } }
+    11 #   return $class->$orig(@args);
+    12 };
+
+
+
+Left to you is the envisioning of the handling of @args
+
+-------------------------------------------------
+
+-> # Fun with exceptions <-
+
+I do have a bunch of extra code with print statements
+not in the slides due to lack of screen space.
+
+    $ perl run.pl
+
+If you 'touch' /tmp/ouch you get an exception thrown in lib/V/Clone
+
+If you 'touch' /tmp/kiss you get an exception thrown in lib/V/Clone.pm
+that will be 'kiss'ed in lib/StepTransaction.pm
+  Kiss an ouch to make if feel better.
+
+If you 'touch' /tmp/step you get a bad return status from the 
+dispatcher just before V:Clone->new() is called. Therefore the
+transaction block will get a bad return code to signal throwing
+an exception.
+
+-------------------------------------------------
+
+-> # Old Fashion way <-
+
+I guess it all depends on how you want to look at it!
+
+    01     my $status=0;
+    02     try {
+    03        BEGIN_TRANSACTION();
+    04        V:Location->new( $self => is_in_area => 'clonevat'              );
+    05        V:Wallet->new(   $self => pay        => $self->price('cloning') );
+    06        V:Clone->new(    $self => gestate    => $self->station_area     );
+    07        END_TRANSACTION();
+    08     }
+    09     catch { 
+    10        $status=1;
+    11        ROLL_BACK();
+    12        V:Wallet->new( $character => remove => $bet_amount );
+    13     } finally { # ALWAYS
+    14        V:Wallet->new( $character => show_balance );
+    15     };
+    16     my $exchange = new_exchange( slug            => 'purchase-clone',
+    17                                  success_message => 'You have purchased a new clone',
+    18                                  failure_message => 'You could not purchase a new clone', 
+    19                                  $status,
+    20                               )->attempt;
+
+-------------------------------------------------
+
+-> # It depends <-
+
+Do you want to look at 5-8 succinct lines of transaction code
+or 20 plus
+
+Either way you want to create a code template for your team
+to use. Especially when using a source code filter.
+
+    :r codet/step
+
+-------------------------------------------------
+
+-> # And Remember <-
+
+In this proof of concept versus Tau Station.
+
+I don't know what the subroutines/methods are returning.
+  What do asset constructors return?
+    Does returning object mean true and undef means false?
+  What does Steps return to '$self->new_exchange()'?
+    I assume success or failure on the transaction.
+
+I assume that their database handle is stashed some
+where in their web application framework. 
+
+I don't know whats behind that curtain.
+
+-------------------------------------------------
+
+-> The End. Qs <-
+
+
+1) Use JT Smith's [Ouch](http://search.cpan.org/~rizen/Ouch-0.0500/lib/Ouch.pm) module for exceptions!!!
+
+2) Purchase Mr. Curtis Poe's Books
+
+3) Complete code will be on the MadMongers' github page
+     [MadMongers/StepTransaction](https://github.com/MadMongers/StepTransaction)
+
+4) Interested in this topic. Google
+     Ovid Writing Declarative Perl
+     Ovid On writing clean code
+
+My Professional Bull Riders flack jacket sponsors are:
+     [The Game Crafter](https://www.thegamecrafter.com)       Make your *dream* Board Game come TRUE
+     [Table Top Events](https://tabletop.events)       Your next Convention Management System (in the cloud)
+     [Twit.tv](https://twit.tv)                If it has a chip in it, we'll be talking about it
