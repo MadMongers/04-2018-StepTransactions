@@ -245,7 +245,7 @@ Reminder: Methods inside the anonymous arrays will be executed before calling 'S
 -> # From the man page of Filter::Util::Call <-
 
 
-Example 4: Using filter_del
+Example 4: 
 
 Another variation on a theme. This time we will modify the Subst filter to 
 allow a starting and stopping pattern to be specified as well as the from 
@@ -261,7 +261,7 @@ When used as a filter we want to invoke it like this:
 
 -> # More on Filter::Util::Call <-
 
-Cont.  Example 4: Using filter_del
+Cont.  Example 4: Focusing on filter_del area in this example
 
 
 
@@ -290,16 +290,15 @@ What we're looking for is
     07     filter_add( sub {
     08             my ($status) ;
     09             if (($status = filter_read()) > 0) {
-    10                 $found = 1;
-    11                 if $found == 0 and /$start/ ;
-    12                 if ($found) {
-    13                     s/$from/$to/ ;
-    14                     filter_del() if /$stop/ ;
-    15                 }
-    16             }
-    17             $status ;  # JE comment: slight of hand *return value*
-    18         } )
-    19 }
+    10                 if ($found == 0 and /$start/) { $found = 1; }
+    11                 if ($found) {
+    12                     s/$from/$to/ ;
+    13                     filter_del() if /$stop/ ;
+    14                 }
+    15             }
+    16             $status ;  # JE comment: slight of hand *return value*
+    17         } )
+    18 }
 
 -------------------------------------------------
 
