@@ -16,7 +16,9 @@ Conditions "
    Assumptions
    
      ASSERT step(s) are grouped at the top.
+     
      A grouping of FAILURE/ALWAYS step(s) signals a RDBMS transaction.
+     
         i.e. There could be multiple RDMBS transactions.
 3. Updated test program to have the latest code snipet.
 
