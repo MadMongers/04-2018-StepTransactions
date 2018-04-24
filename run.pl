@@ -7,4 +7,6 @@ my $clone = PurchaseClones->new;
 $clone->purchase_clone;
 say '';
 $clone->purchase_clone2;
+say '';
+$clone->scavenge;
 exit 0;

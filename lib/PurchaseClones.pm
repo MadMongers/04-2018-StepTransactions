@@ -69,4 +69,30 @@ sub purchase_clone2 {
       ),
    )->attempt;
 }
+
+sub scavenge {
+  my ($self) = @_;
+  my $inventory    = '';
+  my $station_area = '';
+
+  my $key = 'found-item';
+
+  my $focus_cost = 256;
+  my $stamina_cost = 13;
+
+  my $exchange = $self->new_exchange(
+    slug => 'scavenge',
+    Steps(
+      ASSERT( Location( $self => can_scavenge => $station_area )),
+      ASSERT( Stats( $self => minimum_required => { curr_stamina => $stamina_cost, focus => $focus_cost, })),
+              Location( $self => scavenge => { station_area => $station_area, key => $key, }),
+      ALWAYS( Stats( $self => remove => { curr_stamina => $stamina_cost })),
+              Stats( $self => remove => { focus => $focus_cost }),
+              Inventory( $inventory => add_item => { item => $key, new_key => 'found' }),
+              Event( $self => store => { event_type => 'find', stashed    => { item => $key } }),
+    ),
+  );
+
+  return $exchange->attempt;
+}
 1;
