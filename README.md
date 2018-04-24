@@ -12,7 +12,9 @@ Conditions "
 
 1. Made changes to the source filter
 2. Updated 'Steps' function
+
    Assumptions
+   
      ASSERT step(s) are grouped at the top.
      A grouping of FAILURE/ALWAYS step(s) signals a RDBMS transaction.
         i.e. There could be multiple RDMBS transactions.
